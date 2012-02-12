@@ -18,6 +18,8 @@ import java.util.Iterator;
  * Public domain.
  */
 final public class Main {
+	private static final boolean DEBUG = false;
+	
 	public static void main(String[] args) throws IOException, SolrServerException {
 		if(args.length != 3) {
 			System.err.println("Syntax: ./javastuff <dumpfile.txt> <timestamp file> <solr base url>");
@@ -33,7 +35,7 @@ final public class Main {
 			timestamp = (Long)timestampItt.next().get("timestamp").getFirstValue();
 			try(Reader reader = new FileReader(timestampFile)) {
 				long oldTimestamp = Long.valueOf(new LineIterator(reader).next());
-				if(oldTimestamp >= timestamp)
+				if(oldTimestamp >= timestamp && !DEBUG)
 					System.exit(2);
 			}
 		}
@@ -88,6 +90,8 @@ final public class Main {
 					return result;
 				}
 			});
+			if(DEBUG)
+				itt2 = Iterators.limit(itt2, 100);
 			return CloseableIterator.makeCloseable(itt2, reader);
 		} catch(Throwable t) {
 			try {
