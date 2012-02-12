@@ -6,6 +6,7 @@ import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
 
@@ -20,6 +21,7 @@ final public class SolrIndexer {
 	public SolrIndexer(String solrBaseURL) throws MalformedURLException, URIException {
 		solrBaseURL = solrBaseURL + (solrBaseURL.endsWith("/") ? "" : "/");
 		_solr = new CommonsHttpSolrServer(solrBaseURL + "write");
+		_solr.setRequestWriter(new BinaryRequestWriter());
 		_swapURI = new URI(solrBaseURL + "admin/cores?action=SWAP&core=write&other=read", false);
 	}
 	
