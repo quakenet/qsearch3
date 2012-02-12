@@ -1,6 +1,12 @@
 package org.quakenet.qsearch3;
 
+import com.google.common.base.Charsets;
 import org.apache.solr.common.SolrInputDocument;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 
 final public class Mappings {
 	private Mappings() {
@@ -40,13 +46,24 @@ final public class Mappings {
 	}
 
 	public static class StringMapping extends AbstractMapping<String> {
+		private final CharsetDecoder _decoder = Charsets.UTF_8.newDecoder();
+		{
+			_decoder.onMalformedInput(CodingErrorAction.REPORT);
+			_decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+		}
+		
 		public StringMapping(String ... fieldNames) {
 			super(fieldNames);
 		}
 
 		@Override
 		protected String convert(String value) {
-			return value;
+			byte[] data = value.getBytes(Charsets.ISO_8859_1);
+			try {
+				return _decoder.decode(ByteBuffer.wrap(data)).toString();
+			} catch (CharacterCodingException e) {
+				return value;
+			}
 		}
 	}
 
